@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"os"
 	"strings"
@@ -14,7 +15,10 @@ type Quiz struct {
 }
 
 func main() {
-	file, err := os.Open("problem.csv")
+	filePath := flag.String("filePath", "problem.csv", "filePath of csv file")
+	flag.Parse()
+
+	file, err := os.Open(*filePath)
 	if err != nil {
 		panic("Can not open the files")
 	}
@@ -34,7 +38,7 @@ func main() {
 	totalCorrect := 0
 
 	for _, s := range allQuiz {
-		fmt.Printf("Question %v, You Answer: 10", s.question)
+		fmt.Printf("Question %v, You Answer: ", s.question)
 		readInput := bufio.NewReader(os.Stdin)
 		answer, err := readInput.ReadString('\n')
 
