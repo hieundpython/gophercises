@@ -1,12 +1,11 @@
 package main
 
 import (
-	"bufio"
 	"encoding/csv"
 	"flag"
 	"fmt"
 	"os"
-	"strings"
+	"time"
 )
 
 type Quiz struct {
@@ -16,6 +15,7 @@ type Quiz struct {
 
 func main() {
 	filePath := flag.String("filePath", "problem.csv", "filePath of csv file")
+	timeout := flag.Int("timeout", 5, "time for one quiz question")
 	flag.Parse()
 
 	file, err := os.Open(*filePath)
@@ -37,19 +37,32 @@ func main() {
 
 	totalCorrect := 0
 
+	fmt.Println("Game Start!!")
+
+loopQuiz:
 	for _, s := range allQuiz {
 		fmt.Printf("Question %v, You Answer: ", s.question)
-		readInput := bufio.NewReader(os.Stdin)
-		answer, err := readInput.ReadString('\n')
 
-		if err != nil {
-			panic("Can read from keyboard")
+		timer := time.NewTimer(time.Duration(*timeout) * time.Second)
+		answerCh := make(chan string)
+		go func() {
+			var answer string
+			fmt.Scanf("%s\n", &answer)
+			answerCh <- answer
+		}()
+
+		select {
+		case answer := <-answerCh:
+			if answer == s.answer {
+				totalCorrect++
+				continue
+			}
+		case <-timer.C:
+			fmt.Println("\nTime Out!!")
+			break loopQuiz
 		}
 
-		if strings.Trim(answer, "\r\n") == s.answer {
-			totalCorrect++
-		}
 	}
 
-	fmt.Printf("Total correct: %d\n", totalCorrect)
+	fmt.Printf("\nCorrect %d in total %d\n", totalCorrect, len(allQuiz))
 }
