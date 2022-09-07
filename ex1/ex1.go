@@ -1,4 +1,4 @@
-package main
+package ex1
 
 import (
 	"encoding/csv"
@@ -13,8 +13,8 @@ type Quiz struct {
 	answer   string
 }
 
-func main() {
-	filePath := flag.String("filePath", "problem.csv", "filePath of csv file")
+func Exec() {
+	filePath := flag.String("filePath", "./ex1/problem.csv", "filePath of csv file")
 	timeout := flag.Int("timeout", 5, "time for one quiz question")
 	flag.Parse()
 
