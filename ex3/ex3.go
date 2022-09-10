@@ -1,19 +1,40 @@
 package ex3
 
 import (
-	"fmt"
-	"io"
+	"flag"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
-func hello(w http.ResponseWriter, req *http.Request) {
-	io.WriteString(w, "Hello World")
+func handleContent(store Store) func(w http.ResponseWriter, r *http.Request) {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		pathUrl := strings.Trim(r.URL.Path, "/")
+
+		// load template
+		bookStoreTp, err := template.ParseFiles("./ex3/template.html")
+		if err != nil {
+			log.Fatalln(err)
+		}
+		// return with template
+		chapter := store[pathUrl]
+		err = bookStoreTp.Execute(w, chapter)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+	}
 }
 
 func Exec() {
-	file, err := os.Open("./ex3/book.json")
+	fileFlag := flag.String("filePath", "./ex3/book.json", "json file")
+
+	flag.Parse()
+
+	file, err := os.Open(*fileFlag)
 
 	if err != nil {
 		log.Fatalln(err)
@@ -24,13 +45,12 @@ func Exec() {
 		log.Fatalln(err)
 	}
 
-	fmt.Println(store)
-
-	// Create http handle for handle all routing here
-
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", hello)
+	for key := range store {
+		mux.HandleFunc("/"+key, handleContent(store))
+	}
+
 	log.Fatal(http.ListenAndServe("localhost:3000", mux))
 
 }
