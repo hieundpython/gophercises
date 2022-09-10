@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"sync"
 	"time"
+
+	"github.com/thoas/go-funk"
 )
 
 type TaskStore struct {
@@ -17,6 +19,7 @@ func New() *TaskStore {
 	ts := &TaskStore{}
 
 	ts.tasks = make(map[int]Task)
+	ts.nextId = 0
 	return ts
 }
 func (ts *TaskStore) CreateTask(text string, tags []string, due time.Time) int {
@@ -44,7 +47,7 @@ func (ts *TaskStore) GetTask(id int) (Task, error) {
 		return task, nil
 	}
 
-	return Task{}, fmt.Errorf("Can find task id %d \n", id)
+	return Task{}, fmt.Errorf("can find task id %d", id)
 }
 
 func (ts *TaskStore) DeleteTask(id int) error {
@@ -52,7 +55,7 @@ func (ts *TaskStore) DeleteTask(id int) error {
 	defer ts.Unlock()
 
 	if _, ok := ts.tasks[id]; !ok {
-		return fmt.Errorf("Can find task id %d \n", id)
+		return fmt.Errorf("can find task id %d", id)
 	}
 
 	delete(ts.tasks, id)
@@ -86,7 +89,13 @@ func (ts *TaskStore) GetTasksByTag(tag string) []Task {
 
 	var tasks []Task
 
-	//TODO: Will implement late
+	for _, t := range ts.tasks {
+		if ok := funk.Contains(t.Tags, tag); ok {
+			tasks = append(tasks, t)
+
+		}
+	}
+
 	return tasks
 }
 
@@ -96,6 +105,12 @@ func (ts *TaskStore) GetTasksByDueDate(year int, month time.Month, day int) []Ta
 
 	var tasks []Task
 
-	//TODO: Will implement late
+	for _, t := range ts.tasks {
+		y, m, d := t.Due.Date()
+
+		if (y == year) && (m == month) && (d == day) {
+			tasks = append(tasks, t)
+		}
+	}
 	return tasks
 }
