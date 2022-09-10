@@ -15,7 +15,7 @@ type TaskStore struct {
 	nextId int
 }
 
-func New() *TaskStore {
+func NewTaskStore() *TaskStore {
 	ts := &TaskStore{}
 
 	ts.tasks = make(map[int]Task)

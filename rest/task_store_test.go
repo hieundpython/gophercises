@@ -6,7 +6,7 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	ts := New()
+	ts := NewTaskStore()
 
 	id1 := ts.CreateTask("task 1", []string{"tag1", "tag2"}, time.Now())
 
@@ -22,7 +22,7 @@ func TestCreate(t *testing.T) {
 }
 
 func TestCreateAndGet(t *testing.T) {
-	ts := New()
+	ts := NewTaskStore()
 
 	timeCurrent := time.Now()
 
