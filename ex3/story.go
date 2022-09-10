@@ -21,9 +21,9 @@ func DecodeJson(f *os.File) (Store, error) {
 type Store map[string]Chapter
 
 type Chapter struct {
-	Title     string   `json:"title"`
-	Paragraph []string `json:"story"`
-	Options   []Option `json:"options"`
+	Title      string   `json:"title"`
+	Paragraphs []string `json:"story"`
+	Options    []Option `json:"options"`
 }
 
 type Option struct {
