@@ -1,7 +1,9 @@
 package main
 
-import "goku/ex2"
+import (
+	"goku/ex3"
+)
 
 func main() {
-	ex2.Exec()
+	ex3.Exec()
 }
